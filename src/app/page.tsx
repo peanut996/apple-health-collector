@@ -1,101 +1,164 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import React, { useState, useEffect } from 'react';
+import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  ChartData,
+  ChartOptions,
+} from 'chart.js';
+
+import { parse, format } from 'date-fns';
+import path from 'path';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+interface HealthDataPoint {
+  date: string;
+  steps?: string;
+  weight?: string;
+  heartRate?: string;
+}
+
+interface ChartDataProps {
+  labels: string[];
+  datasets: {
+    label: string;
+    data: number[];
+    fill: boolean;
+    borderColor: string;
+    tension: number;
+  }[];
+}
+
+const chartOptions: ChartOptions<'line'> = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top',
+    },
+    title: {
+      display: true,
+      text: '健康数据可视化',
+    },
+  },
+};
+
+export default function HomePage() {
+  const [healthData, setHealthData] = useState<HealthDataPoint[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/health-data');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data: HealthDataPoint[] = await response.json();
+        setHealthData(data);
+      } catch (error) {
+        console.error('Failed to fetch health data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // 数据预处理 - 步数图表数据
+  const stepData: ChartDataProps = {
+    labels: healthData.map(item => {
+      const date = parse(item.date, 'yyyy-MM-dd', new Date());
+      if (isNaN(date.getTime())) {
+        console.error('Invalid Date:', item.date);
+        return 'Invalid Date';
+      }
+      return format(date, 'yyyy-MM-dd'); //  修改这里，格式化为 yyyy-MM-dd 日期格式
+    }),
+    datasets: [
+      {
+        label: '步数',
+        data: healthData.map(item => parseInt(item.steps || '0')),
+        fill: false,
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1,
+      },
+    ],
+  };
+
+  // 数据预处理 - 体重图表数据
+  const weightData: ChartDataProps = {
+    labels: healthData.map(item => {
+      const date = parse(item.date, 'yyyy-MM-dd', new Date());
+      if (isNaN(date.getTime())) {
+        console.error('Invalid Date:', item.date);
+        return 'Invalid Date';
+      }
+      return format(date, 'yyyy-MM-dd'); // 修改这里，格式化为 yyyy-MM-dd 日期格式
+    }),
+    datasets: [
+      {
+        label: '体重',
+        data: healthData.map(item => parseFloat(item.weight || '0')),
+        fill: false,
+        borderColor: 'rgb(153, 102, 255)',
+        tension: 0.1,
+      },
+    ],
+  };
+
+  // 数据预处理 - 心率图表数据
+  const heartRateData: ChartDataProps = {
+    labels: healthData.map(item => {
+      const date = parse(item.date, 'yyyy-MM-dd', new Date());
+      if (isNaN(date.getTime())) {
+        console.error('Invalid Date:', item.date);
+        return 'Invalid Date';
+      }
+      return format(date, 'yyyy-MM-dd'); // 修改这里，格式化为 yyyy-MM-dd 日期格式
+    }),
+    datasets: [
+      {
+        label: '心率',
+        data: healthData.map(item => parseInt(item.heartRate || '0')),
+        fill: false,
+        borderColor: 'rgb(255, 99, 132)',
+        tension: 0.1,
+      },
+    ],
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div>
+      <h1>Apple 健康数据可视化</h1>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      <h2>步数</h2>
+      {healthData.length > 0 && stepData.datasets[0].data.length > 0 ? (
+        <Line data={stepData as ChartData<'line'>} options={chartOptions} />
+      ) : (
+        <p>没有步数数据</p>
+      )}
+
+      <h2>体重</h2>
+      {healthData.length > 0 && weightData.datasets[0].data.length > 0 ? (
+        <Line data={weightData as ChartData<'line'>} options={chartOptions} />
+      ) : (
+        <p>没有体重数据</p>
+      )}
     </div>
   );
 }
