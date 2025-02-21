@@ -45,13 +45,7 @@ function gen() {
   const jsonData = JSON.stringify(testData, null, 2);
 
   // 定义输出文件路径
-  const dataDir = path.join(process.cwd(), 'data');
-  const filePath = path.join(dataDir, 'health-data.json');
-
-  // 确保 'data' 目录存在
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
-  }
+  const filePath = path.join(process.cwd(), 'health-data.json')
 
   // 将 JSON 数据写入文件
   fs.writeFileSync(filePath, jsonData);
@@ -63,13 +57,7 @@ export async function POST(req: Request) {
         const healthDataPoint: HealthDataPoint = await req.json();
 
         // 文件路径
-        const dataDir = path.join(process.cwd(), 'data'); // data 文件夹路径
-        const filePath = path.join(dataDir, 'health-data.json'); // 完整文件路径
-
-        // 检查 data 文件夹是否存在，如果不存在则创建
-        if (!fs.existsSync(dataDir)) {
-            fs.mkdirSync(dataDir, { recursive: true }); //  recursive: true 确保父目录被创建
-        }
+        const filePath = path.join(process.cwd(), 'health-data.json'); // 完整文件路径
 
         // 读取现有数据 (如果文件存在)
         let existingData: HealthDataPoint[] = [];
@@ -97,7 +85,7 @@ export async function GET() { // 确保导出的是 GET 函数
     try {
         gen()
         // ... (读取 data.json 文件的代码) ...
-        const filePath = path.join(process.cwd(), 'data', 'health-data.json');
+        const filePath = path.join(process.cwd(), 'health-data.json');
         let healthData: HealthDataPoint[] = [];
         if (fs.existsSync(filePath)) {
             const fileContent = fs.readFileSync(filePath, 'utf-8');
