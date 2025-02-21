@@ -86,7 +86,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ message: 'Health data saved successfully!' }, { status: 200 });
 
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error saving health data to JSON file:', error);
         return NextResponse.json({ message: 'Failed to save health data.', error: error.message }, { status: 500 });
     }
@@ -105,7 +105,7 @@ export async function GET() { // 确保导出的是 GET 函数
         }
         return NextResponse.json(healthData, { status: 200 });
 
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error reading health data from JSON file:', error);
         return NextResponse.json({ message: 'Failed to read health data.', error: error.message }, { status: 500 });
     }
