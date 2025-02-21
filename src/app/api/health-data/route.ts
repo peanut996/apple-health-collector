@@ -38,9 +38,8 @@ function gen() {
   // 配置数据生成参数
   const startDate = new Date('2025-01-02'); // 设置起始日期
   const numberOfDays = 30;                // 生成数据的天数
-  const includeWeightData = true;          // 是否包含体重数据
 
-  const testData = generateTestData(startDate, numberOfDays, includeWeightData);
+  const testData = generateTestData(startDate, numberOfDays);
 
   // 将数据转换为 JSON 字符串，并格式化
   const jsonData = JSON.stringify(testData, null, 2);
@@ -87,7 +86,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ message: 'Health data saved successfully!' }, { status: 200 });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error saving health data to JSON file:', error);
         return NextResponse.json({ message: 'Failed to save health data.', error: error.message }, { status: 500 });
     }
@@ -106,7 +105,7 @@ export async function GET() { // 确保导出的是 GET 函数
         }
         return NextResponse.json(healthData, { status: 200 });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error reading health data from JSON file:', error);
         return NextResponse.json({ message: 'Failed to read health data.', error: error.message }, { status: 500 });
     }
