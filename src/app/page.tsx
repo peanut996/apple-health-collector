@@ -16,7 +16,6 @@ import {
 } from 'chart.js';
 
 import { parse, format } from 'date-fns';
-import path from 'path';
 
 ChartJS.register(
   CategoryScale,
@@ -116,27 +115,6 @@ export default function HomePage() {
         data: healthData.map(item => parseFloat(item.weight || '0')),
         fill: false,
         borderColor: 'rgb(153, 102, 255)',
-        tension: 0.1,
-      },
-    ],
-  };
-
-  // 数据预处理 - 心率图表数据
-  const heartRateData: ChartDataProps = {
-    labels: healthData.map(item => {
-      const date = parse(item.date, 'yyyy-MM-dd', new Date());
-      if (isNaN(date.getTime())) {
-        console.error('Invalid Date:', item.date);
-        return 'Invalid Date';
-      }
-      return format(date, 'yyyy-MM-dd'); // 修改这里，格式化为 yyyy-MM-dd 日期格式
-    }),
-    datasets: [
-      {
-        label: '心率',
-        data: healthData.map(item => parseInt(item.heartRate || '0')),
-        fill: false,
-        borderColor: 'rgb(255, 99, 132)',
         tension: 0.1,
       },
     ],

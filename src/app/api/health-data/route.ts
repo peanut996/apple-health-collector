@@ -12,9 +12,9 @@ interface HealthDataPoint {
 }
 
 
-function generateTestData(startDate: Date, days: number, includeWeight = true) {
+function generateTestData(startDate: Date, days: number) {
   const data = [];
-  let currentDate = new Date(startDate);
+  const currentDate = new Date(startDate);
 
   for (let i = 0; i < days; i++) {
     const dateString = currentDate.toISOString().slice(0, 10); // Format date as YYYY-MM-DD
@@ -87,14 +87,14 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ message: 'Health data saved successfully!' }, { status: 200 });
 
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error saving health data to JSON file:', error);
         return NextResponse.json({ message: 'Failed to save health data.', error: error.message }, { status: 500 });
     }
 }
 
 
-export async function GET(req: Request) { // 确保导出的是 GET 函数
+export async function GET() { // 确保导出的是 GET 函数
     try {
         gen()
         // ... (读取 data.json 文件的代码) ...
@@ -106,7 +106,7 @@ export async function GET(req: Request) { // 确保导出的是 GET 函数
         }
         return NextResponse.json(healthData, { status: 200 });
 
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error reading health data from JSON file:', error);
         return NextResponse.json({ message: 'Failed to read health data.', error: error.message }, { status: 500 });
     }
