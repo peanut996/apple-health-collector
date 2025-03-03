@@ -330,6 +330,7 @@ export default function HealthDashboard() {
 
   // Chart options
   // 修改图表选项
+  // 修改图表选项中的scales部分
   const chartOptions: ChartOptions<"line"> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -374,6 +375,9 @@ export default function HealthDashboard() {
         grid: {
           display: false,
         },
+        border: {
+          display: false, // 控制x轴边框
+        },
         ticks: {
           font: {
             size: 10,
@@ -383,30 +387,26 @@ export default function HealthDashboard() {
           maxTicksLimit: 10,
           color: "#666", // 更改刻度颜色
         },
-        border: {
-          display: false, // 移除x轴边框
-        },
       },
       y: {
         beginAtZero: activeTab !== "weight",
         grid: {
           color: "rgba(0, 0, 0, 0.03)", // 更淡的网格线
-          drawBorder: false,
+        },
+        border: {
+          display: false, // 控制y轴边框
         },
         ticks: {
           font: {
             size: 10,
           },
           color: "#666", // 更改刻度颜色
-          callback: function (value) {
-            if (activeTab === "steps" && value >= 1000) {
-              return value / 1000 + "k";
+          callback: function (value: string | number) {
+            if (activeTab === "steps" && Number(value) >= 1000) {
+              return Number(value) / 1000 + "k";
             }
             return value;
           },
-        },
-        border: {
-          display: false, // 移除y轴边框
         },
       },
     },
